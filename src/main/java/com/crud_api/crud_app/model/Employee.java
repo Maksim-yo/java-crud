@@ -27,4 +27,10 @@ public class Employee {
     @JoinColumn(name = "category_id")
     private EmployeeCategory category;
 
+    public Employee(String fullName, List<String> characteristics, EmployeeCategory category) {
+        this.fullName = fullName;
+        this.characteristics = characteristics;
+        this.category = category;
+    }
+
 }

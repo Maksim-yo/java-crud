@@ -9,6 +9,9 @@ import lombok.Setter;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,6 +19,6 @@ import java.util.UUID;
 @Builder
 public class UpdateEmployeeDto {
     private String fullName;
-    private List<String> characteristics;
+    private List<@NotBlank(message = "Characteristic cannot be blank") String> characteristics;
     private UUID categoryId;
 }

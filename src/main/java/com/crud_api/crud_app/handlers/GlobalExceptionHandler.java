@@ -1,4 +1,4 @@
-package com.crud_api.crud_app.exception;
+package com.crud_api.crud_app.handlers;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -14,8 +14,12 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.crud_api.crud_app.exception.ErrorResponse;
+import com.crud_api.crud_app.exception.ValidationErrorResponse;
+import com.crud_api.crud_app.exception.ValidationErrorResponse.Violation;
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.core.JsonParseException;
 
 import java.util.HashMap;
@@ -122,6 +126,7 @@ public class GlobalExceptionHandler {
             .badRequest()
             .body(new ErrorResponse("Missing request parameter: " + ex.getParameterName()));
     }
+
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {

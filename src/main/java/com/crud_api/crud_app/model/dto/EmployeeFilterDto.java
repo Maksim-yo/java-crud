@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class EmployeeFilterDto {
-
+    
     private String fullname;
     private String characteristic;
     private UUID categoryId;

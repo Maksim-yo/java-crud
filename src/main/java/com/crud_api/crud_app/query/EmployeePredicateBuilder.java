@@ -25,7 +25,7 @@ public class EmployeePredicateBuilder {
             predicate.and(employee.characteristics.any().equalsIgnoreCase(filterDto.getCharacteristic()));
         }
 
-        if (filterDto.getCategoryId() != null) {
+        if (filterDto.getCategoryId() != null) {    
             predicate.and(employee.category.id.eq(filterDto.getCategoryId()));
         }
 

@@ -3,8 +3,6 @@ package com.crud_api.crud_app.exception;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.crud_api.crud_app.exception.ValidationErrorResponse.Violation;
-
 import lombok.Getter;
 
 @Getter

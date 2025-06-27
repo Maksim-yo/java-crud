@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "employee")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,15 +29,9 @@ public class Employee {
     private String fullName;
 
     @ElementCollection
-    @CollectionTable(
-        name = "employee_characteristics",
-        joinColumns = @JoinColumn(name = "employee_id")
-    )
-    @Column(name = "characteristics")
     private List<String> characteristics;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
     private EmployeeCategory category;
 
     public Employee(String fullName, List<String> characteristics, EmployeeCategory category) {

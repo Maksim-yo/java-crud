@@ -10,8 +10,6 @@ import java.util.List;
 import com.crud_api.crud_app.model.Employee;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSpecificationExecutor<Employee>  {
-    List<Employee> findByFullName(String fullName);
+public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSpecificationExecutor<Employee>, EmployeeRepositoryCustom   {
 
-    List<Employee> findByCategoryId(UUID categoryId);
 }

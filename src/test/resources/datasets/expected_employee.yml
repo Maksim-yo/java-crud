@@ -1,0 +1,10 @@
+employee:
+  - id: any
+    full_name: John Doe
+    category_id: 11111111-1111-1111-1111-111111111111
+
+employee_characteristics:
+  - employee_id: any
+    characteristics: Hardworking
+  - employee_id: any
+    characteristics: Team player

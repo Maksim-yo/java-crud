@@ -29,31 +29,20 @@ public class EmployeeService {
     private final JPAQueryFactory queryFactory;
 
     @Transactional(readOnly = true)
-    public PageResponseDto<EmployeeDto> getEmployeesSlice(EmployeeFilterDto filterDto, Pageable pageable) {
-        Slice<Employee> slice = employeeRepository.fetchEmployees(filterDto, pageable);
+    public Slice<Employee> getEmployeesSlice(EmployeeFilterDto filterDto, Pageable pageable) {
 
-        List<EmployeeDto> content = slice.getContent().stream()
-                                         .map(employeeMapper::toDto)
-                                         .toList();
-
-        return PageResponseDto.<EmployeeDto>builder()
-                              .content(content)
-                              .pageNumber(pageable.getPageNumber())
-                              .pageSize(pageable.getPageSize())
-                              .hasNext(slice.hasNext())
-                              .build();
+        return employeeRepository.fetchEmployees(filterDto, pageable);
     }
 
     @Transactional(readOnly = true)
-    public EmployeeDto getEmployeeById(UUID id) {
+    public Employee getEmployeeById(UUID id) {
 
-        Employee employee = employeeRepository.findById(id)
-                                              .orElseThrow(() -> new NotFoundException("The employee not found: " + id));
-        return employeeMapper.toDto(employee);
+        return employeeRepository.findById(id)
+                                 .orElseThrow(() -> new NotFoundException("The employee not found: " + id));
     }
 
     @Transactional
-    public EmployeeDto createEmployee(CreateEmployeeDto dto) {
+    public Employee createEmployee(CreateEmployeeDto dto) {
 
         Employee employee = employeeMapper.toEntity(dto);
         if (dto.getCategoryId() != null) {
@@ -61,13 +50,13 @@ public class EmployeeService {
                                                                   .orElseThrow(() -> new NotFoundException("Category not found"));
             employee.setCategory(category);
         }
-
-        Employee saved = employeeRepository.save(employee);
-        return employeeMapper.toDto(saved);
+// То что Slice содержит информацию только о текущей страницы и есть ли следующая, Page содержит инфу о всех страницах
+// и slice делает 1 запрос в бд а page 2 второй - count
+        return employeeRepository.save(employee);
     }
 
     @Transactional
-    public EmployeeDto updateEmployee(UUID id, UpdateEmployeeDto dto) {
+    public Employee updateEmployee(UUID id, UpdateEmployeeDto dto) {
 
         Employee existing = employeeRepository.findById(id)
                                               .orElseThrow(() -> new NotFoundException("The employee not found: " + id));
@@ -78,9 +67,7 @@ public class EmployeeService {
         }
 
         employeeMapper.updateEmployee(existing, dto);
-
-        Employee updated = employeeRepository.save(existing);
-        return employeeMapper.toDto(updated);
+        return employeeRepository.save(existing);
     }
 
     @Transactional

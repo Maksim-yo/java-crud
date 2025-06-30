@@ -1,9 +1,7 @@
 package com.crud_api.crud_app.handlers;
 
-import com.crud_api.crud_app.exception.ErrorResponse;
+import com.crud_api.crud_app.exception.ApiErrorResponse;
 import com.crud_api.crud_app.exception.NotFoundException;
-import com.crud_api.crud_app.exception.ValidationErrorResponse;
-import com.crud_api.crud_app.exception.ValidationErrorResponse.Violation;
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,28 +30,33 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        List<Violation> violations = ex.getBindingResult().getFieldErrors().stream()
-                                       .map(error -> new Violation(error.getField(), error.getDefaultMessage())).toList();
-        ValidationErrorResponse response = new ValidationErrorResponse("Validation failed", violations);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ApiErrorResponse handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        List<ApiErrorResponse.Violation> violations = ex.getBindingResult()
+                                                        .getFieldErrors()
+                                                        .stream()
+                                                        .map(error -> new ApiErrorResponse.Violation(error.getField(), error.getDefaultMessage()))
+                                                        .toList();
+
+        return new ApiErrorResponse("Validation failed", violations);
     }
+
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ValidationErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
-        List<Violation> violations = ex.getConstraintViolations().stream()
-                                       .map(violation -> new Violation(violation.getPropertyPath().toString(), violation.getMessage()))
-                                       .toList();
-        ValidationErrorResponse response = new ValidationErrorResponse("Validation failed", violations);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    public ApiErrorResponse handleConstraintViolation(ConstraintViolationException ex) {
+        List<ApiErrorResponse.Violation> violations = ex.getConstraintViolations()
+                                                        .stream()
+                                                        .map(violation -> new ApiErrorResponse.Violation(violation.getPropertyPath().toString(), violation.getMessage()))
+                                                        .toList();
+
+        return new ApiErrorResponse("Validation failed", violations);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+
+
+    protected ApiErrorResponse  handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Throwable rootCause = ex.getMostSpecificCause();
         String friendlyMessage = "Invalid JSON format";
@@ -86,50 +88,47 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             friendlyMessage += String.format(" at line %d, column %d", location.getLineNr(), location.getColumnNr());
         }
         log.warn("JSON parse error: {}", friendlyMessage, ex);
-        return ResponseEntity.badRequest().body(new ErrorResponse(friendlyMessage));
+        return new ApiErrorResponse (friendlyMessage, null);
     }
 
     @ExceptionHandler({EntityNotFoundException.class, NotFoundException.class, EmptyResultDataAccessException.class})
-    public ResponseEntity<ErrorResponse> handleNotFound(Exception ex) {
+    public ApiErrorResponse handleNotFound(Exception ex) {
         log.info("Not found: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Not found: " + ex.getMessage()));
+        return new ApiErrorResponse("Not found: " + ex.getMessage(), null);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    public ApiErrorResponse handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Data integrity violation", ex);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(
-                "Database error: referential integrity violation: non-existent reference to another table"));
+        return new ApiErrorResponse(
+                "Database error: referential integrity violation: non-existent reference to another table", null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ApiErrorResponse handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
         String msg = "Type mismatch: parameter '" + ex.getName() + "' should be " + requiredType;
         log.warn(msg);
-        return ResponseEntity.badRequest().body(new ErrorResponse(msg));
+        return new ApiErrorResponse(msg, null);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+    protected ApiErrorResponse handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
                                                                           HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String msg = "Missing request parameter: " + ex.getParameterName();
         log.warn(msg);
-        return ResponseEntity.badRequest().body(new ErrorResponse(msg));
+        return new ApiErrorResponse(msg, null);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
+    protected ApiErrorResponse handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
                                                                          HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String msg = "HTTP method not allowed: " + ex.getMethod();
         log.warn(msg);
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse(msg));
+        return new ApiErrorResponse(msg, null);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    public ApiErrorResponse handleGenericException(Exception ex) {
         log.error("Unhandled exception", ex);
-        return new ResponseEntity<>(new ErrorResponse("Internal server error. Please contact support."),
-                                    HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ApiErrorResponse("Internal server error. Please contact support.", null);
     }
 }

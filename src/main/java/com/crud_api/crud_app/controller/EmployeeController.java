@@ -1,25 +1,13 @@
 package com.crud_api.crud_app.controller;
 
-import java.util.UUID;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.crud_api.crud_app.model.dto.CreateEmployeeDto;
-import com.crud_api.crud_app.model.dto.EmployeeDto;
-import com.crud_api.crud_app.model.dto.EmployeeFilterDto;
-import com.crud_api.crud_app.model.dto.PageResponseDto;
-import com.crud_api.crud_app.model.dto.UpdateEmployeeDto;
+import com.crud_api.crud_app.model.dto.*;
 import com.crud_api.crud_app.service.EmployeeService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/employee")
@@ -46,14 +34,10 @@ public class EmployeeController {
     @PostMapping("/{id:[0-9a-fA-F\\-]{36}}/delete")
     public void delete(@PathVariable UUID id) {
         employeeService.deleteEmployee(id);
-        return;
     }
 
     @GetMapping("/page")
-    public PageResponseDto<EmployeeDto> getEmployeesPage(
-            Pageable pageable,
-            @ModelAttribute EmployeeFilterDto filter) {
+    public PageResponseDto<EmployeeDto> getEmployeesPage(Pageable pageable, @ModelAttribute EmployeeFilterDto filter) {
         return employeeService.getEmployeesSlice(filter, pageable);
     }
-
 }

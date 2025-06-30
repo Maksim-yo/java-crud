@@ -1,16 +1,12 @@
 package com.crud_api.crud_app.model;
 
-import java.util.List;
-import java.util.UUID;
-
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -35,5 +31,4 @@ public class Employee {
         this.characteristics = characteristics;
         this.category = category;
     }
-
 }

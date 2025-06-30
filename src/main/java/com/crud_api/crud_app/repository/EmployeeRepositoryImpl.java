@@ -1,11 +1,5 @@
 package com.crud_api.crud_app.repository;
 
-import java.util.List;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-
 import com.crud_api.crud_app.model.Employee;
 import com.crud_api.crud_app.model.QEmployee;
 import com.crud_api.crud_app.model.QEmployeeCategory;
@@ -13,8 +7,12 @@ import com.crud_api.crud_app.model.dto.EmployeeFilterDto;
 import com.crud_api.crud_app.query.EmployeePredicateBuilder;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
@@ -44,7 +42,5 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
         }
 
         return new SliceImpl<>(results, pageable, hasNext);
-
     }
-
 }

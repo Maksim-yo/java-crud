@@ -1,12 +1,13 @@
 package com.crud_api.crud_app.exception;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-import lombok.Getter;
-
 @Getter
 public class ValidationErrorResponse {
+
     private final List<Violation> errors;
     private final LocalDateTime timestamp;
     private final String message;
@@ -26,7 +27,5 @@ public class ValidationErrorResponse {
             this.field = field;
             this.message = message;
         }
-
     }
-
 }

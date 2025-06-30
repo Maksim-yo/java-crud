@@ -1,17 +1,12 @@
 package com.crud_api.crud_app.mapper;
 
-import java.util.List;
-
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-
 import com.crud_api.crud_app.model.Employee;
 import com.crud_api.crud_app.model.dto.CreateEmployeeDto;
 import com.crud_api.crud_app.model.dto.EmployeeDto;
 import com.crud_api.crud_app.model.dto.UpdateEmployeeDto;
+import org.mapstruct.*;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper {

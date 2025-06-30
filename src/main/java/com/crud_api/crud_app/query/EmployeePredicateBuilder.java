@@ -1,12 +1,10 @@
 package com.crud_api.crud_app.query;
 
-import org.springframework.stereotype.Component;
-
 import com.crud_api.crud_app.model.QEmployee;
 import com.crud_api.crud_app.model.dto.EmployeeFilterDto;
 import com.querydsl.core.BooleanBuilder;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
